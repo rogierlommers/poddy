@@ -1,11 +1,14 @@
-poddy
-====
+# poddy
 your custom podcasts feed
 
-todo
-====
+# features
+- add new epidoses by
+  - read directory
+  - fetch from url
+  - upload form
+
+# todo
 [ ] http://www.dropzonejs.com/#configuration
 
-inspiration
-===========
+# inspiration
 * upload --> https://github.com/andreimarcu/linx-server
