@@ -20,12 +20,20 @@ func IndexPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func AddPodcast(w http.ResponseWriter, r *http.Request) {
-	// https://github.com/blueimp/jQuery-File-Upload
+	// https://www.socketloop.com/tutorials/golang-upload-file
+	// https://www.socketloop.com/tutorials/golang-how-to-verify-uploaded-file-is-image-or-allowed-file-types
 
 	renderObject := map[string]interface{}{
 		"IsLandingPage": "true",
 		"buildversion":  common.BuildDate,
 	}
+
+	uploadedFile, err := uploadPodcast(r)
+	if err != nil {
+		log.Warn("addpodcast", "message", err)
+	}
+	log.Info("addpodcast", "yeah", uploadedFile.name)
+
 	displayPage(w, r, renderObject)
 }
 

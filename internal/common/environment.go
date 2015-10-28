@@ -10,19 +10,22 @@ var (
 	CommitHash string
 	Port       int
 	Host       string
+	Storage    string
 )
 
 func ReadEnvironment() {
 	// override configuration with environment vars
-	// example: GREEDY_PORT=/tmp/greedy.sqlite
+	// example: PODDY_PORT=8080
 	viper.SetEnvPrefix("PODDY")
 	viper.SetDefault("port", 8080)
 	viper.SetDefault("host", "0.0.0.0")
+	viper.SetDefault("storage", "./storage")
 	viper.AutomaticEnv()
 
 	Port = viper.GetInt("port")
 	Host = viper.GetString("host")
+	Storage = viper.GetString("storage")
 
-	log.Info("environment", "host", Host, "port", Port)
+	log.Info("environment", "host", Host, "port", Port, "storage", Storage)
 	log.Info("meta-info", "builddate", BuildDate, "commithash", CommitHash)
 }

@@ -9,20 +9,6 @@
     <meta name="MobileOptimized" content="320"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <link rel="stylesheet" type="text/css" href="static/css/base.css"/>
-    <script src="static/dropzone/dropzone.js"></script>
-    <script>
-        Dropzone.options.myDropzone = {
-            dictDefaultMessage: "upload files",
-            paramName: "file", // The name that will be used to transfer the file
-            maxFilesize: 2, // MB
-            accept: function(file, done) {
-                if (file.name == "justinbieber.jpg") {
-                    done("Naha, you don't.");
-                }
-                else { done(); }
-            }
-        };
-    </script>
 </head>
 
 <body class="home-template">
@@ -47,11 +33,15 @@
 
             <section class="post-content">
                 To upload a new file, drag 'n drop
-                <form action="/add-podcast" class="dropzone" id="myDropzone">
-                    <div class="fallback">
-                        <input name="file" type="file" multiple />
-                    </div>
+
+
+                <form action="/add-podcast" method="post" enctype="multipart/form-data">
+                    <label for="file">Filename:</label>
+                    <input type="file" name="file" id="file">
+                    <input type="submit" name="submit" value="Submit">
                 </form>
+
+
             </section>
 
             <footer class="post-footer">
