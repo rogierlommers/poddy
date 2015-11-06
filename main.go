@@ -12,8 +12,6 @@ import (
 )
 
 func main() {
-	log.Info("poddy", "status", "starting service")
-
 	// read environment vars
 	common.ReadEnvironment()
 
@@ -32,11 +30,12 @@ func main() {
 
 	// start server
 	http.Handle("/", router)
-	log.Info("deamon", "host", common.Host, "port", common.Port)
+	log.Info("poddy is running/listening", "host", common.Host, "port", common.Port)
 
 	err := http.ListenAndServe(fmt.Sprintf("%s:%d", common.Host, common.Port), nil)
 	if err != nil {
 		log.Crit("daemon could not bind on interface", "host", common.Host, "port", common.Port)
 		os.Exit(1)
 	}
+
 }

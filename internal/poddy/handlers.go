@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/GeertJohan/go.rice"
+	"github.com/dustin/go-humanize"
 	"github.com/rogierlommers/poddy/internal/common"
 	log "gopkg.in/inconshreveable/log15.v2"
 )
@@ -20,20 +21,20 @@ func IndexPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func AddPodcast(w http.ResponseWriter, r *http.Request) {
-	// https://www.socketloop.com/tutorials/golang-upload-file
-	// https://www.socketloop.com/tutorials/golang-how-to-verify-uploaded-file-is-image-or-allowed-file-types
-
-	renderObject := map[string]interface{}{
-		"IsLandingPage": "true",
-		"buildversion":  common.BuildDate,
-	}
-
 	uploadedFile, err := uploadPodcast(r)
 	if err != nil {
-		log.Warn("addpodcast", "message", err)
+		log.Warn("error uploading/saving podcast", "message", err)
+		uploadedFile.failed = true
+	} else {
+		log.Info("file succesfully uploaded", "filename", uploadedFile.name, "size", humanize.Bytes(uint64(uploadedFile.size)))
 	}
-	log.Info("addpodcast", "yeah", uploadedFile.name)
 
+	renderObject := map[string]interface{}{
+		"IsConfirmationPage": "true",
+		"failed":             uploadedFile.failed,
+		"name":               uploadedFile.name,
+		"size":               uploadedFile.size,
+	}
 	displayPage(w, r, renderObject)
 }
 

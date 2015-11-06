@@ -12,42 +12,46 @@ import (
 )
 
 type UploadFile struct {
-	name string
+	name     string
+	size     int64
+	filetype string
+	failed   bool
 }
 
 func uploadPodcast(r *http.Request) (uploadFile UploadFile, err error) {
 	// the FormFile function takes in the POST input id file
 	file, header, err := r.FormFile("file")
 	if err != nil {
-		return fmt.Errorf("error uploading file: %s:", err)
+		return uploadFile, err
 	}
-
 	defer file.Close()
 
-	target := filepath.Join(common.Storage, "uploadedfile")
-	log.Debug("addpodcast", "target", target)
+	target := filepath.Join(common.Storage, header.Filename)
 	out, err := os.Create(target)
 	if err != nil {
-		return fmt.Errorf("Unable to create the file for writing. Check your write access privilege")
+		return uploadFile, err
 	}
-
 	defer out.Close()
 
 	// write the content from POST to the file
 	_, err = io.Copy(out, file)
 	if err != nil {
-		return fmt.Errorf("error saving file: %s", err)
+		return uploadFile, err
 	}
-	log.Debug("addpodcast", "saved", header.Filename)
 
+	err = verifyUpload(target)
+
+	fileInfo, _ := out.Stat()
 	uploadFile.name = header.Filename
-	return uploadFile
+	uploadFile.size = fileInfo.Size()
+	return uploadFile, nil
 }
 
-func verifyUpload() {
+func verifyUpload(target string) {
+	log.Debug("checked filetype", "filename", target)
 
 	// open the uploaded file
-	file, err := os.Open("./img.png")
+	file, err := os.Open(target)
 
 	if err != nil {
 		fmt.Println(err)

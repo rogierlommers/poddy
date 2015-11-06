@@ -26,6 +26,6 @@ func ReadEnvironment() {
 	Host = viper.GetString("host")
 	Storage = viper.GetString("storage")
 
-	log.Info("environment", "host", Host, "port", Port, "storage", Storage)
-	log.Info("meta-info", "builddate", BuildDate, "commithash", CommitHash)
+	log.Info("environment info loaded", "host", Host, "port", Port, "storage", Storage)
+	log.Info("build information", "builddate", BuildDate, "commithash", CommitHash)
 }
