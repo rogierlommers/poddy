@@ -8,14 +8,18 @@ import (
 	"path/filepath"
 
 	"github.com/rogierlommers/poddy/internal/common"
-	log "gopkg.in/inconshreveable/log15.v2"
 )
 
 type UploadFile struct {
-	name     string
-	size     int64
-	filetype string
-	failed   bool
+	name         string
+	size         int64
+	filetype     string
+	failed       bool
+	errormessage string
+}
+
+type PodcastList struct {
+	Podcast []UploadFile
 }
 
 func uploadPodcast(r *http.Request) (uploadFile UploadFile, err error) {
@@ -40,6 +44,11 @@ func uploadPodcast(r *http.Request) (uploadFile UploadFile, err error) {
 	}
 
 	err = verifyUpload(target)
+	if err != nil {
+		uploadFile.failed = true
+		uploadFile.errormessage = err.Error()
+		return uploadFile, err
+	}
 
 	fileInfo, _ := out.Stat()
 	uploadFile.name = header.Filename
@@ -47,9 +56,7 @@ func uploadPodcast(r *http.Request) (uploadFile UploadFile, err error) {
 	return uploadFile, nil
 }
 
-func verifyUpload(target string) {
-	log.Debug("checked filetype", "filename", target)
-
+func verifyUpload(target string) error {
 	// open the uploaded file
 	file, err := os.Open(target)
 
@@ -68,23 +75,8 @@ func verifyUpload(target string) {
 	}
 
 	filetype := http.DetectContentType(buff)
-
-	fmt.Println(filetype)
-
-	switch filetype {
-	case "image/jpeg", "image/jpg":
-		fmt.Println(filetype)
-
-	case "image/gif":
-		fmt.Println(filetype)
-
-	case "image/png":
-		fmt.Println(filetype)
-
-	case "application/pdf":
-		fmt.Println(filetype)
-	default:
-		fmt.Println("unknown file type uploaded")
+	if filetype != "application/octet-stream" {
+		return fmt.Errorf("type '%s' is illegal", filetype)
 	}
-
+	return nil
 }

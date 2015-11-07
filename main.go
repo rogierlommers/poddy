@@ -27,6 +27,7 @@ func main() {
 	// http handles
 	router.HandleFunc("/", poddy.IndexPage)
 	router.HandleFunc("/add-podcast", poddy.AddPodcast)
+	router.HandleFunc("/rss", poddy.DisplayPodcastFeed)
 
 	// start server
 	http.Handle("/", router)

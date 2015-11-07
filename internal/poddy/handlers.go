@@ -1,7 +1,9 @@
 package poddy
 
 import (
+	"fmt"
 	"html/template"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/GeertJohan/go.rice"
@@ -13,6 +15,12 @@ import (
 var staticBox *rice.Box
 
 func IndexPage(w http.ResponseWriter, r *http.Request) {
+	//	podcastList, err := listPodcasts()
+	//	if err != nil {
+	//		log.Error(err.Error())
+	//	}
+	//	spew.Dump(podcastList)
+
 	renderObject := map[string]interface{}{
 		"IsLandingPage": "true",
 		"buildversion":  common.BuildDate,
@@ -21,21 +29,39 @@ func IndexPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func AddPodcast(w http.ResponseWriter, r *http.Request) {
+	var humanSize string
 	uploadedFile, err := uploadPodcast(r)
+
 	if err != nil {
-		log.Warn("error uploading/saving podcast", "message", err)
 		uploadedFile.failed = true
+		log.Warn("error uploading/saving podcast", "message", err)
 	} else {
-		log.Info("file succesfully uploaded", "filename", uploadedFile.name, "size", humanize.Bytes(uint64(uploadedFile.size)))
+		humanSize = humanize.Bytes(uint64(uploadedFile.size))
+		log.Info("file succesfully uploaded", "filename", uploadedFile.name, "size", humanSize)
 	}
 
 	renderObject := map[string]interface{}{
 		"IsConfirmationPage": "true",
 		"failed":             uploadedFile.failed,
 		"name":               uploadedFile.name,
-		"size":               uploadedFile.size,
+		"size":               humanSize,
+		"errormessage":       uploadedFile.errormessage,
 	}
 	displayPage(w, r, renderObject)
+}
+
+func DisplayPodcastFeed(w http.ResponseWriter, r *http.Request) {
+	files, err := ioutil.ReadDir(common.Storage)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	for _, f := range files {
+		fmt.Println(f.Name())
+	}
+
+	w.Write([]byte("rogk"))
 }
 
 func CreateStaticBox() {
