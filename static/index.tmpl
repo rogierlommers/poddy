@@ -19,12 +19,9 @@
             {{if .IsConfirmationPage}}
             <p>
                 {{ if .failed }}
-                {{ .name }} failed to upload
+                {{ .name }} failed to upload: {{ .errormessage }}
                 {{ else }}
-                upload succeeded!
-                <p>
-                    {{ .name }}, size: {{ .size }}
-                </p>
+                upload done!<br/>{{ .name }}, size: {{ .size }}
                 {{ end }}
             </p>
             {{end}}
