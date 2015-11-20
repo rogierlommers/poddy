@@ -7,15 +7,20 @@ import (
 	"os"
 	"path/filepath"
 
+	"io/ioutil"
+
+	"time"
+
 	"github.com/rogierlommers/poddy/internal/common"
 	log "gopkg.in/inconshreveable/log15.v2"
 )
 
 type UploadFile struct {
-	name     string
-	size     int64
-	filetype string
-	failed   bool
+	Name     string
+	Size     int64
+	Filetype string
+	Failed   bool
+	Added    time.Time
 }
 
 func uploadPodcast(r *http.Request) (uploadFile UploadFile, err error) {
@@ -39,20 +44,23 @@ func uploadPodcast(r *http.Request) (uploadFile UploadFile, err error) {
 		return uploadFile, err
 	}
 
-	err = verifyUpload(target)
+	filetype, invalid := isLegalFileFormat(target)
+	if invalid {
+		log.Error("invalid filetype detected", "file", target, "filetype", filetype)
+		deleteError := os.Remove(target)
+		if deleteError != nil {
+			log.Error("could not delete invalid file", "file", target, "filetype", filetype)
+		}
+	}
 
 	fileInfo, _ := out.Stat()
-	uploadFile.name = header.Filename
-	uploadFile.size = fileInfo.Size()
+	uploadFile.Name = header.Filename
+	uploadFile.Size = fileInfo.Size()
 	return uploadFile, nil
 }
 
-func verifyUpload(target string) {
-	log.Debug("checked filetype", "filename", target)
-
-	// open the uploaded file
+func isLegalFileFormat(target string) (filetype string, invalid bool) {
 	file, err := os.Open(target)
-
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -63,28 +71,33 @@ func verifyUpload(target string) {
 	_, err = file.Read(buff)
 
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		log.Error("unable to determine filetype", "file", target, "message", err)
+		return "unknown", true
 	}
 
-	filetype := http.DetectContentType(buff)
+	filetype = http.DetectContentType(buff)
+	if filetype != "application/octet-stream" {
+		return filetype, true
+	}
+	return filetype, false
+}
 
-	fmt.Println(filetype)
-
-	switch filetype {
-	case "image/jpeg", "image/jpg":
-		fmt.Println(filetype)
-
-	case "image/gif":
-		fmt.Println(filetype)
-
-	case "image/png":
-		fmt.Println(filetype)
-
-	case "application/pdf":
-		fmt.Println(filetype)
-	default:
-		fmt.Println("unknown file type uploaded")
+func FileList() []UploadFile {
+	items := []UploadFile{}
+	list, err := ioutil.ReadDir(common.Storage)
+	if err != nil {
+		log.Error("could nog read contents of storage", "message", err)
 	}
 
+	for _, file := range list {
+		newFile := UploadFile{}
+		if file.Mode().IsRegular() {
+			newFile.Name = file.Name()
+			newFile.Size = file.Size()
+			//newFile.DownloadUrl = fmt.Sprintf("%s/%s", common.Storage, newFile.Name)
+
+		}
+		items = append(items, newFile)
+	}
+	return items
 }

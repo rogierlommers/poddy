@@ -27,6 +27,8 @@ func main() {
 	// http handles
 	router.HandleFunc("/", poddy.IndexPage)
 	router.HandleFunc("/add-podcast", poddy.AddPodcast)
+	router.HandleFunc("/feed", poddy.Feed)
+	router.PathPrefix("/download").Handler(http.StripPrefix("/download", http.FileServer(http.Dir("storage/"))))
 
 	// start server
 	http.Handle("/", router)
