@@ -5,11 +5,9 @@ import (
 	"net/http"
 	"time"
 
-	"fmt"
-
 	"github.com/GeertJohan/go.rice"
+	"github.com/andjosh/gopod"
 	"github.com/dustin/go-humanize"
-	"github.com/gorilla/feeds"
 	"github.com/rogierlommers/poddy/internal/common"
 	log "gopkg.in/inconshreveable/log15.v2"
 )
@@ -44,32 +42,43 @@ func AddPodcast(w http.ResponseWriter, r *http.Request) {
 }
 
 func Feed(w http.ResponseWriter, r *http.Request) {
-	files := FileList()
-	now := time.Now()
+	//files := FileList()
 
-	feed := &feeds.Feed{
-		Title:       "my poddy feed",
-		Link:        &feeds.Link{Href: "http://poddy.lommers.org"},
-		Description: "My saved podcasts",
-		Author:      &feeds.Author{"dummy", "dummy"},
-		Created:     now,
-	}
+	c := gopod.ChannelFactory("My personal channel", "http://RubyDeveloper.com/", "My Blog", "http://example.com/image.png")
+	c.SetPubDate(time.Now().UTC())
+	c.SetiTunesExplicit("No")
 
-	for _, file := range files {
-		link := fmt.Sprintf("%s/download/%s", "http://poddy.lommers.org", file.Name)
-		newItem := feeds.Item{
-			Title: file.Name,
-			Link:  &feeds.Link{Href: link},
-		}
-		feed.Add(&newItem)
-	}
+	c.AddItem(&gopod.Item{
+		Title:       "Stack Overflow",
+		Link:        "http://stackoverflow.com",
+		Description: "Stack Overflow",
+		PubDate:     time.Now().UTC().Format(time.RFC1123),
+	})
 
-	rss, err := feed.ToRss()
-	if err != nil {
-		log.Error("error generation RSS feed", "message", err)
-		return
+	// Example: Using an item's methods
+	t := "My title"
+	l := "http://linkedin.com"
+	i := &gopod.Item{
+		Title:         t,
+		TunesSubtitle: t,
+		Link:          l,
+		Description:   "My LinkedIn",
+		TunesDuration: "600",
+		TunesSummary:  "I asked myself that question more than a decade ago and it changed my...",
+		Guid:          l,
+		Creator:       "Daniel's Channel",
 	}
-	w.Write([]byte(rss))
+	i.SetEnclosure("http://example.com/sound.mp3", "600", "audio/mpeg")
+	i.SetPubDate(time.Now().Unix())
+	c.AddItem(i)
+
+	//	for _, file := range files {
+	//		// link := fmt.Sprintf("%s/download/%s", "http://poddy.lommers.org", file.Name)
+	//
+	//	}
+
+	feed := c.Publish()
+	w.Write([]byte(feed))
 
 }
 
