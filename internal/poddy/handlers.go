@@ -1,6 +1,7 @@
 package poddy
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
 	"time"
@@ -42,40 +43,29 @@ func AddPodcast(w http.ResponseWriter, r *http.Request) {
 }
 
 func Feed(w http.ResponseWriter, r *http.Request) {
-	//files := FileList()
+	files := FileList()
 
-	c := gopod.ChannelFactory("My personal channel", "http://RubyDeveloper.com/", "My Blog", "http://example.com/image.png")
+	c := gopod.ChannelFactory("Poddy!", common.Self, "My Blog", "http://example.com/image.png")
 	c.SetPubDate(time.Now().UTC())
 	c.SetiTunesExplicit("No")
 
-	c.AddItem(&gopod.Item{
-		Title:       "Stack Overflow",
-		Link:        "http://stackoverflow.com",
-		Description: "Stack Overflow",
-		PubDate:     time.Now().UTC().Format(time.RFC1123),
-	})
+	for _, file := range files {
+		link := fmt.Sprintf("%s/download/%s", "http://poddy.lommers.org", file.Name)
+		i := &gopod.Item{
+			Title:         file.Name,
+			TunesSubtitle: file.Name,
+			Link:          link,
+			Description:   file.Name,
+			Guid:          link,
+			Creator:       "Rogier",
+			//TunesDuration: "600",
+			//TunesSummary: "I asked myself that question more than a decade ago and it changed my...",
+		}
+		i.SetEnclosure(link, "unknown", "audio/mpeg")
+		i.SetPubDate(time.Now().Unix())
+		c.AddItem(i)
 
-	// Example: Using an item's methods
-	t := "My title"
-	l := "http://linkedin.com"
-	i := &gopod.Item{
-		Title:         t,
-		TunesSubtitle: t,
-		Link:          l,
-		Description:   "My LinkedIn",
-		TunesDuration: "600",
-		TunesSummary:  "I asked myself that question more than a decade ago and it changed my...",
-		Guid:          l,
-		Creator:       "Daniel's Channel",
 	}
-	i.SetEnclosure("http://example.com/sound.mp3", "600", "audio/mpeg")
-	i.SetPubDate(time.Now().Unix())
-	c.AddItem(i)
-
-	//	for _, file := range files {
-	//		// link := fmt.Sprintf("%s/download/%s", "http://poddy.lommers.org", file.Name)
-	//
-	//	}
 
 	feed := c.Publish()
 	w.Write([]byte(feed))
