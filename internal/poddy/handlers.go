@@ -57,10 +57,9 @@ func Feed(w http.ResponseWriter, r *http.Request) {
 			Description:   file.Name,
 			Guid:          link,
 			Creator:       "Rogier",
-			//TunesDuration: "600",
-			//TunesSummary: "I asked myself that question more than a decade ago and it changed my...",
 		}
-		i.SetEnclosure(link, "unknown", "audio/mpeg")
+
+		i.SetEnclosure(link, "1", file.Filetype)
 		i.SetPubDate(time.Now().Unix())
 		c.AddItem(i)
 
