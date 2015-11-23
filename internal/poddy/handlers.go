@@ -44,8 +44,7 @@ func AddPodcast(w http.ResponseWriter, r *http.Request) {
 
 func Feed(w http.ResponseWriter, r *http.Request) {
 	files := FileList()
-
-	c := gopod.ChannelFactory("Poddy!", common.Self, "My Blog", "http://example.com/image.png")
+	c := gopod.ChannelFactory("Poddy!", common.Self, "Personal poddy feed...", fmt.Sprintf("%s/static/images/poddy.png", common.Self))
 	c.SetPubDate(time.Now().UTC())
 	c.SetiTunesExplicit("No")
 
