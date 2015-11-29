@@ -22,7 +22,7 @@ func main() {
 	common.SetupSelfdiagnose()
 
 	// setup statics
-	poddy.CreateStaticBox()
+	poddy.CreateStaticBox(router)
 
 	// http handles
 	router.HandleFunc("/", poddy.IndexPage)
@@ -31,13 +31,10 @@ func main() {
 	router.PathPrefix("/download").Handler(http.StripPrefix("/download", http.FileServer(http.Dir("storage/"))))
 
 	// start server
-	http.Handle("/", router)
 	log.Info("poddy is running/listening", "host", common.Host, "port", common.Port)
-
-	err := http.ListenAndServe(fmt.Sprintf("%s:%d", common.Host, common.Port), nil)
+	err := http.ListenAndServe(fmt.Sprintf("%s:%d", common.Host, common.Port), router)
 	if err != nil {
 		log.Crit("daemon could not bind on interface", "host", common.Host, "port", common.Port)
 		os.Exit(1)
 	}
-
 }

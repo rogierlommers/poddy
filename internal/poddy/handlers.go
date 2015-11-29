@@ -9,6 +9,7 @@ import (
 	"github.com/GeertJohan/go.rice"
 	"github.com/andjosh/gopod"
 	"github.com/dustin/go-humanize"
+	"github.com/gorilla/mux"
 	"github.com/rogierlommers/poddy/internal/common"
 	log "gopkg.in/inconshreveable/log15.v2"
 )
@@ -71,13 +72,14 @@ func Feed(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func CreateStaticBox() {
+func CreateStaticBox(r *mux.Router) {
 	// create rice.box with static files
 	staticBox = rice.MustFindBox("../../static")
 
 	// static files are being exposed through /static endpoint
 	staticFileServer := http.StripPrefix("/static/", http.FileServer(staticBox.HTTPBox()))
-	http.Handle("/static/", staticFileServer)
+	r.PathPrefix("/static").Handler(staticFileServer)
+
 }
 
 func displayPage(w http.ResponseWriter, r *http.Request, dynamicData interface{}) {
