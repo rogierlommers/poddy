@@ -8,6 +8,9 @@
 *.a
 *.so
 
+# ricebox
+/internal/poddy/back-back-static.rice-box.go
+
 # Folders
 _obj
 _test
