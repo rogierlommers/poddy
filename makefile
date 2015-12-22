@@ -5,8 +5,6 @@ LDFLAGS := -X github.com/rogierlommers/poddy/internal/common.CommitHash=`git rev
 BINARY := ./bin/poddy-${VERSION}
 
 build:
-	rm -rf ./target
-	mkdir -p ./target
 	rice embed-go -i ./internal/poddy/
 	CGO_ENABLED=0 go build -ldflags "-s $(LDFLAGS)" -a -installsuffix cgo -o ./target/poddy main.go
 
