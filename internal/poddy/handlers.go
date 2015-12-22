@@ -22,6 +22,7 @@ func IndexPage(w http.ResponseWriter, r *http.Request) {
 		"buildversion":  common.BuildDate,
 		"Filelist":      FileList(),
 	}
+	log.Info("display main page")
 	displayPage(w, r, renderObject)
 }
 
