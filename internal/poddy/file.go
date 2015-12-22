@@ -11,7 +11,6 @@ import (
 
 	"time"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/rogierlommers/poddy/internal/common"
 	log "gopkg.in/inconshreveable/log15.v2"
 )
@@ -89,7 +88,7 @@ func FileList() []UploadFile {
 	if err != nil {
 		log.Error("could nog read contents of storage", "message", err)
 	}
-	spew.Dump(list)
+
 	for _, file := range list {
 		newFile := UploadFile{}
 		if file.Mode().IsRegular() {
