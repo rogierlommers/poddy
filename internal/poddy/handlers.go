@@ -44,7 +44,7 @@ func AddPodcast(w http.ResponseWriter, r *http.Request) {
 }
 
 func Feed(w http.ResponseWriter, r *http.Request) {
-	log.Debug("crawler passde by", "user-agent", r.Header.Get("User-Agent"))
+	log.Debug("crawler passed by", "user-agent", r.Header.Get("User-Agent"))
 	files := FileList()
 	c := gopod.ChannelFactory("Poddy!", common.Self, "Personal poddy feed...", fmt.Sprintf("%s/static/images/poddy.png", common.Self))
 	c.SetPubDate(time.Now().UTC())
