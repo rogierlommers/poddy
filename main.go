@@ -12,6 +12,9 @@ import (
 )
 
 func main() {
+	// hmz
+	log.Info("donderop")
+
 	// read environment vars
 	common.ReadEnvironment()
 

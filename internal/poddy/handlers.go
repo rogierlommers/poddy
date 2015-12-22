@@ -64,9 +64,7 @@ func Feed(w http.ResponseWriter, r *http.Request) {
 		i.SetEnclosure(link, "1", file.Filetype)
 		i.SetPubDate(time.Now().Unix())
 		c.AddItem(i)
-
 	}
-
 	feed := c.Publish()
 	w.Write([]byte(feed))
 
@@ -92,6 +90,5 @@ func displayPage(w http.ResponseWriter, r *http.Request, dynamicData interface{}
 	if err != nil {
 		log.Crit("template", "error", err)
 	}
-
 	tmplMessage.Execute(w, dynamicData)
 }

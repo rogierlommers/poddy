@@ -3,11 +3,10 @@ package poddy
 import (
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
-
-	"io/ioutil"
 
 	"time"
 
@@ -95,7 +94,6 @@ func FileList() []UploadFile {
 			newFile.Name = file.Name()
 			newFile.Size = file.Size()
 			//newFile.DownloadUrl = fmt.Sprintf("%s/%s", common.Storage, newFile.Name)
-
 		}
 		items = append(items, newFile)
 	}
