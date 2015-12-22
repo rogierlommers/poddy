@@ -1,7 +1,6 @@
 /target/poddy
 /poddy.iml
 /.idea
-/target
 /storage/*
 # Compiled Object files, Static and Dynamic libs (Shared Objects)
 *.o
