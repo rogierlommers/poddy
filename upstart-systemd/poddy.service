@@ -1,0 +1,19 @@
+[Unit]
+Description=Poddy service
+After=network.target
+
+[Service]
+Type=simple
+User=rlommers
+Group=rlommers
+WorkingDirectory=/srv/services/poddy
+ExecStart=/srv/services/poddy/poddy
+Restart=always
+RestartSec=5
+StartLimitInterval=60s
+StartLimitBurst=3
+Environment=PODDY_STORAGE="/srv/services/poddy/storage"
+Environment=PODDY_PORT=8085
+
+[Install]
+WantedBy=multi-user.target
