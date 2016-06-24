@@ -1,4 +1,5 @@
 /target/poddy
+/bin/poddy
 /poddy.iml
 /.idea
 /storage/*
