@@ -9,6 +9,7 @@
 
 # ricebox
 /internal/poddy/back-back-static.rice-box.go
+/internal/poddy/rice-box.go
 
 # Folders
 _obj
