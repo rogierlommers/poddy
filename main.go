@@ -18,9 +18,6 @@ func main() {
 	// initialise mux router
 	router := mux.NewRouter()
 
-	// selfdiagnose
-	common.SetupSelfdiagnose()
-
 	// setup statics
 	poddy.CreateStaticBox(router)
 

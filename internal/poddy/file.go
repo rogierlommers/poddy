@@ -14,6 +14,7 @@ import (
 	log "gopkg.in/inconshreveable/log15.v2"
 )
 
+// UploadFile describes files in storage
 type UploadFile struct {
 	Name     string
 	Size     int64
@@ -23,7 +24,6 @@ type UploadFile struct {
 }
 
 func uploadPodcast(r *http.Request) (uploadFile UploadFile, err error) {
-	// the FormFile function takes in the POST input id file
 	file, header, err := r.FormFile("file")
 	if err != nil {
 		return uploadFile, err
@@ -81,11 +81,14 @@ func isLegalFileFormat(target string) (filetype string, invalid bool) {
 	return filetype, false
 }
 
+// FileList returns slice of UploadedFiles
 func FileList() []UploadFile {
 	items := []UploadFile{}
+	log.Debug("opening dir", "dirname", common.Storage)
+
 	list, err := ioutil.ReadDir(common.Storage)
 	if err != nil {
-		log.Error("could nog read contents of storage", "message", err)
+		log.Error("storage error", "error", err)
 	}
 
 	for _, file := range list {
@@ -93,7 +96,6 @@ func FileList() []UploadFile {
 		if file.Mode().IsRegular() {
 			newFile.Name = file.Name()
 			newFile.Size = file.Size()
-			//newFile.DownloadUrl = fmt.Sprintf("%s/%s", common.Storage, newFile.Name)
 		}
 		items = append(items, newFile)
 	}
