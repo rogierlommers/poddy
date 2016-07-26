@@ -15,7 +15,7 @@ import (
 	log "gopkg.in/inconshreveable/log15.v2"
 )
 
-const frequencyWatchDirectory = 1
+const frequencyWatchDirectory = 60
 
 // UploadFile describes files in storage
 type UploadFile struct {
