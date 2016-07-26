@@ -21,6 +21,16 @@ func main() {
 	// setup statics
 	poddy.CreateStaticBox(router)
 
+	// setup watchdirectory
+	if common.Watch != "" {
+		check, err := os.Stat(common.Watch)
+		if err != nil || !check.IsDir() {
+			log.Error("error setting up watchdirectory (point to directory?)")
+		} else {
+			poddy.EnableWatchdirectory(common.Watch)
+		}
+	}
+
 	// http handles
 	router.HandleFunc("/", poddy.IndexPage)
 	router.HandleFunc("/add-podcast", poddy.AddPodcast)

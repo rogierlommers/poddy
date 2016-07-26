@@ -14,6 +14,8 @@ import (
 	log "gopkg.in/inconshreveable/log15.v2"
 )
 
+const frequencyWatchDirectory = 1
+
 // UploadFile describes files in storage
 type UploadFile struct {
 	Name     string
@@ -100,4 +102,38 @@ func FileList() []UploadFile {
 		items = append(items, newFile)
 	}
 	return items
+}
+
+// EnableWatchdirectory initializes periodically scanning a dirtectory for mp3 files
+func EnableWatchdirectory(target string) {
+	go func() {
+		log.Info("setting up watchdirectory", "location", target, "interval", frequencyWatchDirectory)
+		for {
+			time.Sleep(frequencyWatchDirectory * time.Second)
+			moveMP3toStorageDirectory(target, common.Storage)
+		}
+	}()
+}
+
+func moveMP3toStorageDirectory(watchdir, storage string) {
+	files, err := ioutil.ReadDir(watchdir)
+	if err != nil {
+		log.Error("scan error", "error", err)
+		return
+	}
+
+	for _, file := range files {
+		if !file.IsDir() {
+
+			source := filepath.Join(watchdir, file.Name())
+			target := filepath.Join(storage, file.Name())
+
+			log.Info("about to move file", "source", source, "target", target)
+			err := os.Rename(source, target)
+			if err != nil {
+				log.Error("move error", "error", err)
+				return
+			}
+		}
+	}
 }

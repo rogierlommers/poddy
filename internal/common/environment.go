@@ -11,6 +11,7 @@ var (
 	Port       int
 	Host       string
 	Storage    string
+	Watch      string
 	Self       string
 )
 
@@ -21,14 +22,16 @@ func ReadEnvironment() {
 	viper.SetDefault("port", 8080)
 	viper.SetDefault("host", "0.0.0.0")
 	viper.SetDefault("storage", "./storage")
+	viper.SetDefault("watch", "")
 	viper.SetDefault("self", "http://poddy.lommers.org")
 	viper.AutomaticEnv()
 
 	Port = viper.GetInt("port")
 	Host = viper.GetString("host")
 	Storage = viper.GetString("storage")
+	Watch = viper.GetString("watch")
 	Self = viper.GetString("self")
 
-	log.Info("environment info loaded", "host", Host, "port", Port, "storage", Storage)
+	log.Info("environment info loaded", "host", Host, "port", Port, "storage", Storage, "watch", Watch)
 	log.Info("build information", "builddate", BuildDate, "commithash", CommitHash)
 }

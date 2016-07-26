@@ -13,6 +13,7 @@ RestartSec=5
 StartLimitInterval=60s
 StartLimitBurst=3
 Environment=PODDY_STORAGE=/srv/services/poddy/storage
+Environment=PODDY_WATCH=
 Environment=PODDY_PORT=8085
 
 [Install]
