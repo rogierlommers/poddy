@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"time"
 
@@ -124,16 +125,52 @@ func moveMP3toStorageDirectory(watchdir, storage string) {
 
 	for _, file := range files {
 		if !file.IsDir() {
+			if strings.HasSuffix(file.Name(), "mp3") {
+				source := filepath.Join(watchdir, file.Name())
+				target := filepath.Join(storage, file.Name())
 
-			source := filepath.Join(watchdir, file.Name())
-			target := filepath.Join(storage, file.Name())
+				// first copy file
+				log.Info("about to copy file", "source", source, "target", target)
+				err := copyFileContents(source, target)
+				if err != nil {
+					log.Error("copy error", "error", err)
+					return
+				}
 
-			log.Info("about to move file", "source", source, "target", target)
-			err := os.Rename(source, target)
-			if err != nil {
-				log.Error("move error", "error", err)
-				return
+				// then delete original file
+				err = os.Remove(source)
+				if err != nil {
+					log.Error("error deleting source file", "error", err)
+				}
 			}
+			log.Debug("only process mp3 files")
 		}
 	}
+}
+
+// copyFileContents copies the contents of the file named src to the file named
+// by dst. The file will be created if it does not already exist. If the
+// destination file exists, all it's contents will be replaced by the contents
+// of the source file.
+func copyFileContents(src, dst string) (err error) {
+	in, err := os.Open(src)
+	if err != nil {
+		return
+	}
+	defer in.Close()
+	out, err := os.Create(dst)
+	if err != nil {
+		return
+	}
+	defer func() {
+		cerr := out.Close()
+		if err == nil {
+			err = cerr
+		}
+	}()
+	if _, err = io.Copy(out, in); err != nil {
+		return
+	}
+	err = out.Sync()
+	return
 }
