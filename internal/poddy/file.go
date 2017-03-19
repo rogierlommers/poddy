@@ -87,7 +87,6 @@ func isLegalFileFormat(target string) (filetype string, invalid bool) {
 // FileList returns slice of UploadedFiles
 func FileList() []UploadFile {
 	items := []UploadFile{}
-	log.Debug("opening dir", "dirname", common.Storage)
 
 	list, err := ioutil.ReadDir(common.Storage)
 	if err != nil {
