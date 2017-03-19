@@ -1,0 +1,13 @@
+[Unit]
+Description=Poddy service
+Requires=docker.service
+After=docker.service
+
+[Service]
+Restart=always
+ExecStart=/usr/bin/docker run -v /srv/services/poddy:/poddy/storage -v /srv/dropbox/Apps/WatchDirectory:/poddy/watch -p 9002:8080 --name poddy rogierlommers/poddy
+ExecStop=/usr/bin/docker stop -t 2 poddy
+ExecStopPost=/usr/bin/docker rm -f poddy
+
+[Install]
+WantedBy=default.target
