@@ -22,6 +22,7 @@ func main() {
 	poddy.CreateStaticBox(router)
 
 	// setup watchdirectory
+	log.Info("Watchdirectory in config", "directory", common.Watch)
 	if common.Watch != "" {
 		check, err := os.Stat(common.Watch)
 		if err != nil || !check.IsDir() {
