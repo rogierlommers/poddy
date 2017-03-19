@@ -22,7 +22,7 @@ func ReadEnvironment() {
 	viper.SetDefault("port", 8080)
 	viper.SetDefault("host", "0.0.0.0")
 	viper.SetDefault("storage", "./storage")
-	viper.SetDefault("watch", "")
+	viper.SetDefault("watch", "./watch")
 	viper.SetDefault("self", "http://poddy.lommers.org")
 	viper.AutomaticEnv()
 
